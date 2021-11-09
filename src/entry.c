@@ -21,14 +21,10 @@ DWORD WINAPI startup_thread(VOID) {
   PVOID domain = il2cpp_domain_get();
   PIL2CPP_ASSEMBLY assembly = il2cpp_domain_assembly_open(domain, "Assembly-CSharp");
   SIZE_T cls_index = 0;
-  BYTE state = 0;
 
   MH_Initialize();
 
   while (cls_index < il2cpp_image_get_class_count(assembly->image)) {
-    if (state == 7)
-      break;
-
     PVOID cls = il2cpp_image_get_class(assembly->image, cls_index);
 
     if (cls != NULL) {
@@ -36,20 +32,14 @@ DWORD WINAPI startup_thread(VOID) {
       PMETHOD_INFO method = NULL;
 
       while ((method = il2cpp_class_get_methods(cls, &iterator)) != 0) {
-        if ((strcmp(method->method_name, "GetUnlockedSkins") == 0) && !((state & 1) == 1)) {
+        if (strcmp(method->method_name, "GetUnlockedSkins") == 0)
           MH_CreateHook(method->method_pointer, (PVOID)&get_unlocked_skins, NULL);
-          state |= 1;
-        }
 
-        if ((strcmp(method->method_name, "GetUnlockedHats") == 0) && !((state & 2) == 2)) {
+        if (strcmp(method->method_name, "GetUnlockedHats") == 0)
           MH_CreateHook(method->method_pointer, (PVOID)&get_unlocked_hats, NULL);
-          state |= 2;
-        }
 
-        if ((strcmp(method->method_name, "GetUnlockedPets") == 0) && !((state & 4) == 4)) {
+        if (strcmp(method->method_name, "GetUnlockedPets") == 0)
           MH_CreateHook(method->method_pointer, (PVOID)&get_unlocked_pets, NULL);
-          state |= 4;
-        }
       }
     }
 
