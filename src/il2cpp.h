@@ -1,5 +1,7 @@
 #pragma once
 
+#include <windows.h>
+
 typedef struct _METHOD_INFO {
   PVOID method_pointer;
   PVOID invoker_method;
