@@ -4,8 +4,6 @@
 
 typedef struct _METHOD_INFO {
   PVOID method_pointer;
-  PVOID invoker_method;
-  PCSTR method_name;
 } METHOD_INFO, *PMETHOD_INFO;
 
 typedef struct _IL2CPP_ASSEMBLY {
@@ -29,10 +27,9 @@ typedef struct _HAT_MANAGER {
 	tmp_##name name;
 
 DECLARE_FUNC(PVOID, il2cpp_domain_get, ())
-DECLARE_FUNC(PIL2CPP_ASSEMBLY, il2cpp_domain_assembly_open, (PVOID domain, PCSTR name))
-DECLARE_FUNC(SIZE_T, il2cpp_image_get_class_count, (PVOID image))
-DECLARE_FUNC(PVOID, il2cpp_image_get_class, (PVOID image, SIZE_T index))
-DECLARE_FUNC(PMETHOD_INFO, il2cpp_class_get_methods, (PVOID cls, PVOID *iterator))
+DECLARE_FUNC(PIL2CPP_ASSEMBLY, il2cpp_domain_assembly_open, (PVOID, PCSTR))
+DECLARE_FUNC(PVOID, il2cpp_class_from_name, (PVOID, PCSTR, PCSTR))
+DECLARE_FUNC(PMETHOD_INFO, il2cpp_class_get_method_from_name, (PVOID, PCSTR, INT))
 
 BOOL il2cpp_init(VOID) {
   HMODULE game_module = GetModuleHandleA("GameAssembly.dll");
@@ -45,9 +42,8 @@ BOOL il2cpp_init(VOID) {
 
 	INIT_FUNC(il2cpp_domain_get)
   INIT_FUNC(il2cpp_domain_assembly_open)
-  INIT_FUNC(il2cpp_image_get_class_count)
-  INIT_FUNC(il2cpp_image_get_class)
-  INIT_FUNC(il2cpp_class_get_methods)
+  INIT_FUNC(il2cpp_class_from_name)
+  INIT_FUNC(il2cpp_class_get_method_from_name)
 
 	return TRUE;
 }

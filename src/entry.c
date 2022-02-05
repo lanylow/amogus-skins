@@ -26,29 +26,11 @@ DWORD WINAPI startup_thread(VOID) {
 
   PVOID domain = il2cpp_domain_get();
   PIL2CPP_ASSEMBLY assembly = il2cpp_domain_assembly_open(domain, "Assembly-CSharp");
-  SIZE_T cls_index = 0;
+  PVOID hat_manager = il2cpp_class_from_name(assembly->image, "", "HatManager");
 
-  while (cls_index < il2cpp_image_get_class_count(assembly->image)) {
-    PVOID cls = il2cpp_image_get_class(assembly->image, cls_index);
-
-    if (cls != NULL) {
-      PVOID iterator = NULL;
-      PMETHOD_INFO method = NULL;
-
-      while ((method = il2cpp_class_get_methods(cls, &iterator)) != 0) {
-        if (strcmp(method->method_name, "GetUnlockedSkins") == 0)
-          hook(method->method_pointer, (PVOID)&get_unlocked_skins);
-
-        if (strcmp(method->method_name, "GetUnlockedHats") == 0)
-          hook(method->method_pointer, (PVOID)&get_unlocked_hats);
-
-        if (strcmp(method->method_name, "GetUnlockedPets") == 0)
-          hook(method->method_pointer, (PVOID)&get_unlocked_pets);
-      }
-    }
-
-    ++cls_index;
-  }
+  hook(il2cpp_class_get_method_from_name(hat_manager, "GetUnlockedSkins", 0)->method_pointer, (PVOID)&get_unlocked_skins);
+  hook(il2cpp_class_get_method_from_name(hat_manager, "GetUnlockedHats", 0)->method_pointer, (PVOID)&get_unlocked_hats);
+  hook(il2cpp_class_get_method_from_name(hat_manager, "GetUnlockedPets", 0)->method_pointer, (PVOID)&get_unlocked_pets);
 
   return EXIT_SUCCESS;
 }
