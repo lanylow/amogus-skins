@@ -8,16 +8,8 @@ VOID hook(PVOID target, PVOID detour) {
   VirtualProtect(target, 5, old, &old);
 }
 
-PVOID get_unlocked_skins(PHAT_MANAGER _this, PVOID info) {
-  return _this->all_skins->array;
-}
-
-PVOID get_unlocked_hats(PHAT_MANAGER _this, PVOID info) {
-  return _this->all_hats->array;
-}
-
-PVOID get_unlocked_pets(PHAT_MANAGER _this, PVOID info) {
-  return _this->all_pets->array;
+BOOLEAN get_purchase(PVOID item, PVOID bundle, PVOID info) {
+  return TRUE;
 }
 
 DWORD WINAPI startup_thread(VOID) {
@@ -26,11 +18,9 @@ DWORD WINAPI startup_thread(VOID) {
 
   PVOID domain = il2cpp_domain_get();
   PIL2CPP_ASSEMBLY assembly = il2cpp_domain_assembly_open(domain, "Assembly-CSharp");
-  PVOID hat_manager = il2cpp_class_from_name(assembly->image, "", "HatManager");
+  PVOID save_manager = il2cpp_class_from_name(assembly->image, "", "SaveManager");
 
-  hook(il2cpp_class_get_method_from_name(hat_manager, "GetUnlockedSkins", 0)->method_pointer, (PVOID)&get_unlocked_skins);
-  hook(il2cpp_class_get_method_from_name(hat_manager, "GetUnlockedHats", 0)->method_pointer, (PVOID)&get_unlocked_hats);
-  hook(il2cpp_class_get_method_from_name(hat_manager, "GetUnlockedPets", 0)->method_pointer, (PVOID)&get_unlocked_pets);
+  hook(il2cpp_class_get_method_from_name(save_manager, "GetPurchase", 2)->method_pointer, (PVOID)&get_purchase);
 
   return EXIT_SUCCESS;
 }

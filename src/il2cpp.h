@@ -10,18 +10,6 @@ typedef struct _IL2CPP_ASSEMBLY {
   PVOID image;
 } IL2CPP_ASSEMBLY, *PIL2CPP_ASSEMBLY;
 
-typedef struct _LIST {
-  BYTE pad[8];
-  PVOID array;
-} LIST, *PLIST;
-
-typedef struct _HAT_MANAGER {
-  BYTE pad[24];
-  PLIST all_pets;
-  PLIST all_hats;
-  PLIST all_skins;
-} HAT_MANAGER, *PHAT_MANAGER;
-
 #define DECLARE_FUNC(ret, name, args) \
 	typedef ret (*tmp_##name) args; \
 	tmp_##name name;
