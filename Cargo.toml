@@ -1,0 +1,12 @@
+[package]
+name = "amogus-skins-rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "amogusskins"
+crate-type = ["cdylib"]
+
+[dependencies]
+detour = "0.8.1"
+winapi = { version = "0.3.9", features = ["minwindef", "consoleapi", "libloaderapi", "processthreadsapi"] }
