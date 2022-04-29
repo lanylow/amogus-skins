@@ -1,34 +1,36 @@
-#[macro_use]
-extern crate detour;
-
 use winapi::{
-  ctypes::*,
   shared::minwindef::*,
   um::{
     libloaderapi::*,
     processthreadsapi::*,
     winnt::*,
+    memoryapi::*
   }
 };
 
 mod il2cpp;
 
-static_detour! {
-  static get_purchase_hook_def: unsafe extern "cdecl" fn(*const c_void , *const c_void, *const c_void) -> bool;
-}
-
-type GetPurchaseT = unsafe extern "cdecl" fn(*const c_void , *const c_void, *const c_void) -> bool;
-fn get_purchase_hook(_item: *const c_void , _bundle: *const c_void, _info: *const c_void) -> bool {
-  return true;
+fn write_bytes(address: u32, bytes: &[u8]) {
+  for i in 0..bytes.len() {
+    unsafe { std::ptr::write((address as usize + i) as _, bytes[i]) };
+  }
 }
 
 unsafe extern "system" fn init_thread(_instance: LPVOID) -> DWORD {
   let domain = il2cpp::domain_get();
   let assembly = il2cpp::domain_assembly_open(domain, "Assembly-CSharp\0".as_ptr());
   let save_manager = il2cpp::class_from_name((*assembly).image, "\0".as_ptr(), "SaveManager\0".as_ptr());
-  let get_purchase = std::mem::transmute::<_, GetPurchaseT>((*il2cpp::class_get_method_from_name(save_manager, "GetPurchase\0".as_ptr(), 2)).method_pointer);
+  let get_purchase = (*il2cpp::class_get_method_from_name(save_manager, "GetPurchase\0".as_ptr(), 2)).method_pointer;
 
-  get_purchase_hook_def.initialize(get_purchase, get_purchase_hook).unwrap().enable().unwrap();
+  /* Our patch:
+   *  mov al, 1
+   *  retn
+   */
+
+  let mut old_protection: DWORD = 0;
+  VirtualProtect(get_purchase as _, 3, PAGE_EXECUTE_READWRITE, &mut old_protection);
+  write_bytes(get_purchase as _, b"\xB0\x01\xC3");
+  VirtualProtect(get_purchase as _, 3, old_protection, &mut old_protection);
 
   return 0;
 }
