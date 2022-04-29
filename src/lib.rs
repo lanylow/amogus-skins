@@ -10,12 +10,6 @@ use winapi::{
 
 mod il2cpp;
 
-fn write_bytes(address: u32, bytes: &[u8]) {
-  for i in 0..bytes.len() {
-    unsafe { std::ptr::write((address as usize + i) as _, bytes[i]) };
-  }
-}
-
 unsafe extern "system" fn init_thread(_instance: LPVOID) -> DWORD {
   let domain = il2cpp::domain_get();
   let assembly = il2cpp::domain_assembly_open(domain, "Assembly-CSharp\0".as_ptr());
@@ -29,7 +23,7 @@ unsafe extern "system" fn init_thread(_instance: LPVOID) -> DWORD {
 
   let mut old_protection: DWORD = 0;
   VirtualProtect(get_purchase as _, 3, PAGE_EXECUTE_READWRITE, &mut old_protection);
-  write_bytes(get_purchase as _, b"\xB0\x01\xC3");
+  std::ptr::copy(b"\xB0\x01\xC3", get_purchase as _, 3);
   VirtualProtect(get_purchase as _, 3, old_protection, &mut old_protection);
 
   return 0;
