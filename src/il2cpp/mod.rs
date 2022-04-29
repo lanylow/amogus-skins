@@ -32,8 +32,8 @@ pub fn domain_get() -> *const c_void {
 }
 
 type Il2cppDomainAssemblyOpenT = unsafe extern "cdecl" fn(*const c_void, *const u8) -> *const il2cpp_assembly;
-pub fn domain_assembly_open(domain: *const c_void, name: *const u8) -> *const il2cpp_assembly {
-  unsafe { return std::mem::transmute::<_, Il2cppDomainAssemblyOpenT>(get_il2cpp_method("il2cpp_domain_assembly_open\0".as_ptr()))(domain, name); }
+pub fn domain_assembly_open<'a>(domain: *const c_void, name: *const u8) -> &'a il2cpp_assembly {
+  unsafe { return &*std::mem::transmute::<_, Il2cppDomainAssemblyOpenT>(get_il2cpp_method("il2cpp_domain_assembly_open\0".as_ptr()))(domain, name); }
 }
 
 type Il2cppClassFromNameT = unsafe extern "cdecl" fn(*const c_void, *const u8, *const u8) -> *const c_void;
@@ -42,6 +42,6 @@ pub fn class_from_name(image: *const c_void, namespace: *const u8, name: *const 
 }
 
 type Il2cppClassGetMethodFromNameT = unsafe extern "cdecl" fn(*const c_void, *const u8, c_int) -> *const method_info;
-pub fn class_get_method_from_name(class: *const c_void, name: *const u8, arg_count: c_int) -> *const method_info {
-  unsafe { return std::mem::transmute::<_, Il2cppClassGetMethodFromNameT>(get_il2cpp_method("il2cpp_class_get_method_from_name\0".as_ptr()))(class, name, arg_count); }
+pub fn class_get_method_from_name<'a>(class: *const c_void, name: *const u8, arg_count: c_int) -> &'a method_info {
+  unsafe { return &*std::mem::transmute::<_, Il2cppClassGetMethodFromNameT>(get_il2cpp_method("il2cpp_class_get_method_from_name\0".as_ptr()))(class, name, arg_count); }
 }
